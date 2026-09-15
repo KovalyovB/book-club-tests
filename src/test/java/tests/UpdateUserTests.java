@@ -14,12 +14,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static specs.login.LoginSpec.loginRequestSpec;
 import static specs.login.LoginSpec.successfulLoginResponseSpec;
 import static specs.update_user.UpdateUserSpec.*;
+import static tests.TestData.*;
 
 public class UpdateUserTests extends TestBase {
 
-
-    String username = "qa_quru_kb";
-    String password = "123456";
     String firstName;
     String lastName;
     String email;
@@ -34,7 +32,7 @@ public class UpdateUserTests extends TestBase {
 
     @Test
     public void successfulUpdateUserInfoTest() {
-        LoginRequestModel loginData = new LoginRequestModel(username, password);
+        LoginRequestModel loginData = new LoginRequestModel(LOGIN_USERNAME, LOGIN_PASSWORD);
 
         SuccessfulLoginResponseModel loginResponse = given(loginRequestSpec)
                 .body(loginData)
@@ -46,7 +44,7 @@ public class UpdateUserTests extends TestBase {
                 .as(SuccessfulLoginResponseModel.class);
 
         SuccessfulUpdateUserRequestModel updateData = new SuccessfulUpdateUserRequestModel
-                (username, firstName, lastName, email);
+                (LOGIN_USERNAME, firstName, lastName, email);
 
         SuccessfulUpdateUserResponseModel userDataResponse = given(updateUserRequestSpec)
                 .auth()
@@ -59,7 +57,7 @@ public class UpdateUserTests extends TestBase {
                 .extract()
                 .as(SuccessfulUpdateUserResponseModel.class);
 
-        assertThat(userDataResponse.username()).isEqualTo(username);
+        assertThat(userDataResponse.username()).isEqualTo(LOGIN_USERNAME);
         assertThat(userDataResponse.firstName()).isEqualTo(firstName);
         assertThat(userDataResponse.lastName()).isEqualTo(lastName);
         assertThat(userDataResponse.email()).isEqualTo(email);
@@ -68,7 +66,7 @@ public class UpdateUserTests extends TestBase {
 
     @Test
     public void notProvidedTokenOnUpdateUserTest() {
-        LoginRequestModel loginData = new LoginRequestModel(username, password);
+        LoginRequestModel loginData = new LoginRequestModel(LOGIN_USERNAME, LOGIN_PASSWORD);
 
         given(loginRequestSpec)
                 .body(loginData)
@@ -80,7 +78,7 @@ public class UpdateUserTests extends TestBase {
                 .as(SuccessfulLoginResponseModel.class);
 
         SuccessfulUpdateUserRequestModel updateData = new SuccessfulUpdateUserRequestModel
-                (username, firstName, lastName, email);
+                (LOGIN_USERNAME, firstName, lastName, email);
 
         NotProvidedTokenOnUpdateUserResponseModel missingTokenResponse = given(updateUserRequestSpec)
                 .body(updateData)
@@ -91,8 +89,7 @@ public class UpdateUserTests extends TestBase {
                 .extract()
                 .as(NotProvidedTokenOnUpdateUserResponseModel.class);
 
-        String expectedError = "Authentication credentials were not provided.";
-        assertThat(missingTokenResponse.detail()).isEqualTo(expectedError);
+        assertThat(missingTokenResponse.detail()).isEqualTo(MISSING_TOKEN_UPDATE_USER_ERROR_MESSAGE);
 
     }
 }

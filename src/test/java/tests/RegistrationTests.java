@@ -10,6 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static specs.registration.RegistrationSpec.*;
+import static tests.TestData.*;
 
 public class RegistrationTests extends TestBase {
 
@@ -42,9 +43,7 @@ public class RegistrationTests extends TestBase {
         assertThat(registrationResponse.lastName()).isEqualTo("");
         assertThat(registrationResponse.email()).isEqualTo("");
 
-        String ipAddrRegexp = "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}" +
-                "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$";
-        assertThat(registrationResponse.remoteAddr().matches(ipAddrRegexp));
+        assertThat(registrationResponse.remoteAddr().matches(REGISTRATION_IP_REGEXP));
     }
 
     @Test
@@ -71,9 +70,8 @@ public class RegistrationTests extends TestBase {
                 .extract()
                 .as(RegResponseExistingUserModel.class);
 
-        String expectedError = "A user with that username already exists.";
         String actualError = secondRegistrationResponse.username().get(0);
-        assertThat(actualError).isEqualTo(expectedError);
+        assertThat(actualError).isEqualTo(EXISTS_USER_REGISTRATION_MESSAGE);
     }
 
     @Test
@@ -89,8 +87,7 @@ public class RegistrationTests extends TestBase {
                 .extract()
                 .as(RegResponseWithoutRequiredParamModel.class);
 
-        String expectedError = "This field is required.";
-        assertEquals(expectedError, response.password().get(0));
+        assertEquals(REQUIRED_REGISTRATION_PARAMETER_ERROR, response.password().get(0));
     }
 
     @Test
@@ -106,8 +103,7 @@ public class RegistrationTests extends TestBase {
                 .extract()
                 .as(RegResponseInvalidMethodModel.class);
 
-        String expectedError = "Method \"GET\" not allowed.";
-        assertEquals(expectedError, response.detail());
+        assertEquals(INVALID_REGISTRATION_METHOD_ERROR_MESSAGE, response.detail());
     }
 
     @Test
@@ -123,7 +119,6 @@ public class RegistrationTests extends TestBase {
                 .extract()
                 .as(RegResponseUnsupportedMediaTypeModel.class);
 
-        String expectedError = "Unsupported media type \"text/plain; charset=ISO-8859-1\" in request.";
-        assertEquals(expectedError, response.detail());
+        assertEquals(INVALID_REGISTRATION_FORMAT_ERROR_MESSAGE, response.detail());
     }
 }

@@ -10,16 +10,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static specs.login.LoginSpec.loginRequestSpec;
 import static specs.login.LoginSpec.successfulLoginResponseSpec;
 import static specs.logout.LogoutSpec.*;
+import static tests.TestData.*;
 
 public class LogoutTests extends TestBase {
 
-    String username = "qa_quru_kb";
-    String password = "123456";
-    String wrongRefreshToken = "111";
-
     @Test
     public void successfulLogoutTest() {
-        LoginRequestModel loginData = new LoginRequestModel(username, password);
+        LoginRequestModel loginData = new LoginRequestModel(LOGIN_USERNAME, LOGIN_PASSWORD);
 
         String refreshToken = given(loginRequestSpec)
                 .body(loginData)
@@ -41,7 +38,7 @@ public class LogoutTests extends TestBase {
 
     @Test
     public void wrongRefreshTokenLogoutTest() {
-        SuccessfulLogoutRequestModel LogoutData = new SuccessfulLogoutRequestModel(wrongRefreshToken);
+        SuccessfulLogoutRequestModel LogoutData = new SuccessfulLogoutRequestModel(WRONG_REFRESH_TOKEN);
 
         WrongRefreshTokenLogoutResponseModel logoutResponse = given(successfulLogoutRequestSpec)
                 .body(LogoutData)
@@ -52,10 +49,8 @@ public class LogoutTests extends TestBase {
                 .extract()
                 .as(WrongRefreshTokenLogoutResponseModel.class);
 
-        String expectedDetailMessage = "Token is invalid";
-        String expectedCodeMessage = "token_not_valid";
-        assertThat(logoutResponse.detail()).isEqualTo(expectedDetailMessage);
-        assertThat(logoutResponse.code()).isEqualTo(expectedCodeMessage);
+        assertThat(logoutResponse.detail()).isEqualTo(EXPECTED_TOKEN_DETAIL_ERROR_MESSAGE);
+        assertThat(logoutResponse.code()).isEqualTo(EXPECTED_TOKEN_CODE_ERROR_MESSAGE);
 
 
     }
