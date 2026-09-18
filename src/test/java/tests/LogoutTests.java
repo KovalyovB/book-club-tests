@@ -48,16 +48,18 @@ public class LogoutTests extends TestBase {
     public void wrongRefreshTokenLogoutTest() {
         SuccessfulLogoutRequestModel LogoutData = new SuccessfulLogoutRequestModel(WRONG_REFRESH_TOKEN);
 
-        step("Проверка ошибки при выходе из системы с некорректным токеном", () -> {
-            WrongRefreshTokenLogoutResponseModel logoutResponse = given(successfulLogoutRequestSpec)
-                    .body(LogoutData)
-                    .when()
-                    .post("/api/v1/auth/logout/")
-                    .then()
-                    .spec(wrongRefreshTokenResponseSpec)
-                    .extract()
-                    .as(WrongRefreshTokenLogoutResponseModel.class);
+        WrongRefreshTokenLogoutResponseModel logoutResponse = step("Запрос на разавторизацию с не валидным токеном", () ->
+                given(successfulLogoutRequestSpec)
+                        .body(LogoutData)
+                        .when()
+                        .post("/api/v1/auth/logout/")
+                        .then()
+                        .spec(wrongRefreshTokenResponseSpec)
+                        .extract()
+                        .as(WrongRefreshTokenLogoutResponseModel.class)
+        );
 
+        step("Проверка возврата ошибки о не валидном токене", () -> {
             assertThat(logoutResponse.detail()).isEqualTo(EXPECTED_TOKEN_DETAIL_ERROR_MESSAGE);
             assertThat(logoutResponse.code()).isEqualTo(EXPECTED_TOKEN_CODE_ERROR_MESSAGE);
         });

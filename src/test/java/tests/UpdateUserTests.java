@@ -50,18 +50,20 @@ public class UpdateUserTests extends TestBase {
         SuccessfulUpdateUserRequestModel updateData = new SuccessfulUpdateUserRequestModel
                 (LOGIN_USERNAME, firstName, lastName, email);
 
-        step("Обновление, проверка обновленных данных и кода 200", () -> {
-            SuccessfulUpdateUserResponseModel userDataResponse = given(updateUserRequestSpec)
-                    .auth()
-                    .oauth2(loginResponse)
-                    .body(updateData)
-                    .when()
-                    .put("/api/v1/users/me/")
-                    .then()
-                    .spec(successfulUpdateUserResponseSpec)
-                    .extract()
-                    .as(SuccessfulUpdateUserResponseModel.class);
+        SuccessfulUpdateUserResponseModel userDataResponse = step("Запрос на обновление данных пользователя", () ->
+                given(updateUserRequestSpec)
+                        .auth()
+                        .oauth2(loginResponse)
+                        .body(updateData)
+                        .when()
+                        .put("/api/v1/users/me/")
+                        .then()
+                        .spec(successfulUpdateUserResponseSpec)
+                        .extract()
+                        .as(SuccessfulUpdateUserResponseModel.class)
+        );
 
+        step("Проверка корректности обновленных данных", () -> {
             assertThat(userDataResponse.username()).isEqualTo(LOGIN_USERNAME);
             assertThat(userDataResponse.firstName()).isEqualTo(firstName);
             assertThat(userDataResponse.lastName()).isEqualTo(lastName);
@@ -89,16 +91,18 @@ public class UpdateUserTests extends TestBase {
         SuccessfulUpdateUserRequestModel updateData = new SuccessfulUpdateUserRequestModel
                 (LOGIN_USERNAME, firstName, lastName, email);
 
-        step("Обновление с неккоректным токеном, проверка ошибки и статуса 401", () -> {
-            NotProvidedTokenOnUpdateUserResponseModel missingTokenResponse = given(updateUserRequestSpec)
-                    .body(updateData)
-                    .when()
-                    .put("/api/v1/users/me/")
-                    .then()
-                    .spec(notProvidedTokenOnUpdateUserResponseSpec)
-                    .extract()
-                    .as(NotProvidedTokenOnUpdateUserResponseModel.class);
+        NotProvidedTokenOnUpdateUserResponseModel missingTokenResponse = step("Запрос на обновление с отсутствующим токеном", () ->
+                given(updateUserRequestSpec)
+                        .body(updateData)
+                        .when()
+                        .put("/api/v1/users/me/")
+                        .then()
+                        .spec(notProvidedTokenOnUpdateUserResponseSpec)
+                        .extract()
+                        .as(NotProvidedTokenOnUpdateUserResponseModel.class)
+        );
 
+        step("Проверка возврата ошибки об отсутствующем токене", () -> {
             assertThat(missingTokenResponse.detail()).isEqualTo(MISSING_TOKEN_UPDATE_USER_ERROR_MESSAGE);
         });
     }

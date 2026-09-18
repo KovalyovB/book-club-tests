@@ -20,16 +20,18 @@ public class LoginTests extends TestBase {
     public void successfulLoginTest() {
         LoginRequestModel loginData = new LoginRequestModel(LOGIN_USERNAME, LOGIN_PASSWORD);
 
-        step("Успешная авторизация пользователя и проверка параметров ответа", () -> {
-            SuccessfulLoginResponseModel loginResponse = given(loginRequestSpec)
-                    .body(loginData)
-                    .when()
-                    .post("/api/v1/auth/token/")
-                    .then()
-                    .spec(successfulLoginResponseSpec)
-                    .extract()
-                    .as(SuccessfulLoginResponseModel.class);
+        SuccessfulLoginResponseModel loginResponse = step("Запрос на авторизацию пользователя", () ->
+                given(loginRequestSpec)
+                        .body(loginData)
+                        .when()
+                        .post("/api/v1/auth/token/")
+                        .then()
+                        .spec(successfulLoginResponseSpec)
+                        .extract()
+                        .as(SuccessfulLoginResponseModel.class)
+        );
 
+        step("Проверка токенов в ответе", () -> {
             String actualAccess = loginResponse.access();
             String actualRefresh = loginResponse.refresh();
 
@@ -44,18 +46,21 @@ public class LoginTests extends TestBase {
     public void wrongCredentialsLoginTest() {
         LoginRequestModel loginData = new LoginRequestModel(LOGIN_USERNAME, LOGIN_WRONG_PASSWORD);
 
-        step("Проверки тела ответа и кода 401 при ошибке при авторизации", () -> {
-            WrongCredentialsLoginResponseModel loginResponse = given(loginRequestSpec)
-                    .body(loginData)
-                    .when()
-                    .post("/api/v1/auth/token/")
-                    .then()
-                    .spec(wrongCredentialLoginResponseSpec)
-                    .extract()
-                    .as(WrongCredentialsLoginResponseModel.class);
+        WrongCredentialsLoginResponseModel loginResponse = step("Авторизация с не валидным паролем", () ->
+                given(loginRequestSpec)
+                        .body(loginData)
+                        .when()
+                        .post("/api/v1/auth/token/")
+                        .then()
+                        .spec(wrongCredentialLoginResponseSpec)
+                        .extract()
+                        .as(WrongCredentialsLoginResponseModel.class)
+        );
 
+        step("Проверка возврата ошибки в ответе", () -> {
             String actualErrorMessage = loginResponse.detail();
             assertThat(actualErrorMessage).isEqualTo(LOGIN_WRONG_CREDENTIALS_ERROR_MESSAGE);
         });
     }
 }
+
