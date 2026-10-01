@@ -1,4 +1,5 @@
 package models.registration;
 
-public record RegResponseUnsupportedMediaTypeModel(String detail) {
+public record RegResponseUnsupportedMediaTypeModel
+        (String detail) {
 }

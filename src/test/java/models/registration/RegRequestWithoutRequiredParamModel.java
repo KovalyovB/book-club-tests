@@ -1,4 +1,5 @@
 package models.registration;
 
-public record RegRequestWithoutRequiredParamModel(String username) {
+public record RegRequestWithoutRequiredParamModel
+        (String username) {
 }

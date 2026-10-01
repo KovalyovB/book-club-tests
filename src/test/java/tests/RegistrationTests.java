@@ -7,11 +7,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static io.qameta.allure.Allure.step;
-import static io.restassured.RestAssured.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static specs.registration.RegistrationSpec.*;
 import static tests.TestData.*;
 
 @DisplayName("Тесты регистрации пользователя")
@@ -32,17 +30,7 @@ public class RegistrationTests extends TestBase {
     public void successfulRegistrationTest() {
         SuccessfulRegistrationRequestModel registrationData = new SuccessfulRegistrationRequestModel(username, password);
 
-        SuccessfulRegistrationResponseModel registrationResponse = step("Запрос на регистрацию", () ->
-                given(registrationRequestSpec)
-                        .body(registrationData)
-                        .when()
-                        .post("/api/v1/users/register/")
-                        .then()
-                        .spec(successfulRegistrationResponseSpec)
-                        .extract()
-                        .as(SuccessfulRegistrationResponseModel.class)
-        );
-
+        SuccessfulRegistrationResponseModel registrationResponse = api.users.register(registrationData);
 
         step("Проверка корректности данных нового пользователя", () -> {
             String actualUserName = registrationResponse.username();
@@ -60,31 +48,12 @@ public class RegistrationTests extends TestBase {
     public void existingUserWrongRegistrationTest() {
         SuccessfulRegistrationRequestModel registrationData = new SuccessfulRegistrationRequestModel(username, password);
 
-        SuccessfulRegistrationResponseModel firstRegistrationResponse = step("Запрос на регистрацию", () ->
-                given(registrationRequestSpec)
-                        .body(registrationData)
-                        .when()
-                        .post("/api/v1/users/register/")
-                        .then()
-                        .spec(successfulRegistrationResponseSpec)
-                        .extract()
-                        .as(SuccessfulRegistrationResponseModel.class)
-        );
+        SuccessfulRegistrationResponseModel firstRegistrationResponse = api.users.register(registrationData);
         step("Проверка имени зарегестрованного пользователя", () -> {
             assertThat(firstRegistrationResponse.username()).isEqualTo(username);
         });
 
-        RegResponseExistingUserModel secondRegistrationResponse = step("Запрос на повторную регистрацию", () ->
-                given(registrationRequestSpec)
-                        .body(registrationData)
-                        .when()
-                        .post("/api/v1/users/register/")
-                        .then()
-                        .spec(existingUserRegistrationResponseSpec)
-                        .extract()
-                        .as(RegResponseExistingUserModel.class)
-        );
-
+        RegResponseExistingUserModel secondRegistrationResponse = api.users.existingUserRegister(registrationData);
         step("Проверка возврата ошибки о не уникальных данных", () -> {
             String actualError = secondRegistrationResponse.username().get(0);
             assertThat(actualError).isEqualTo(EXISTS_USER_REGISTRATION_MESSAGE);
@@ -96,16 +65,7 @@ public class RegistrationTests extends TestBase {
     public void isRequiredFieldMissingTest() {
         RegRequestWithoutRequiredParamModel missingParameterData = new RegRequestWithoutRequiredParamModel(username);
 
-        RegResponseWithoutRequiredParamModel response = step("Запрос на регистрацию с не полным набором параметров", () ->
-                given(registrationRequestSpec)
-                        .body(missingParameterData)
-                        .when()
-                        .post("/api/v1/users/register/")
-                        .then()
-                        .spec(requiredFieldMissingResponseSpec)
-                        .extract()
-                        .as(RegResponseWithoutRequiredParamModel.class)
-        );
+        RegResponseWithoutRequiredParamModel response = api.users.missingParameterRegister(missingParameterData);
 
         step("Проверка возврата ошибки в ответе", () -> {
             assertEquals(REQUIRED_REGISTRATION_PARAMETER_ERROR, response.password().get(0));
@@ -117,16 +77,7 @@ public class RegistrationTests extends TestBase {
     public void invalidRegistrationMethodTest() {
         SuccessfulRegistrationRequestModel registrationData = new SuccessfulRegistrationRequestModel(username, password);
 
-        RegResponseInvalidMethodModel response = step("Запрос на регистрацию с методом GET", () ->
-                given(registrationRequestSpec)
-                        .body(registrationData)
-                        .when()
-                        .get("/api/v1/users/register/")
-                        .then()
-                        .spec(invalidRegistrationMethodResponseSpec)
-                        .extract()
-                        .as(RegResponseInvalidMethodModel.class)
-        );
+        RegResponseInvalidMethodModel response = api.users.invalidMethodRegister(registrationData);
 
         step("Проверка возврата ошибки в ответе", () -> {
             assertEquals(INVALID_REGISTRATION_METHOD_ERROR_MESSAGE, response.detail());
@@ -138,16 +89,7 @@ public class RegistrationTests extends TestBase {
     public void unsupportedMediaTypeTest() {
         SuccessfulRegistrationRequestModel registrationData = new SuccessfulRegistrationRequestModel(username, password);
 
-        RegResponseUnsupportedMediaTypeModel response = step("Запрос на регистрацию с некорректным типом данных", () ->
-                given(wrongMediaTypeRequestSpec)
-                        .body(registrationData)
-                        .when()
-                        .post("/api/v1/users/register/")
-                        .then()
-                        .spec(unsupportedMediaTypeResponseSpec)
-                        .extract()
-                        .as(RegResponseUnsupportedMediaTypeModel.class)
-        );
+        RegResponseUnsupportedMediaTypeModel response = api.users.invalidMediaTypeRegister(registrationData);
 
         step("Проверка возврата ошибки в ответе", () -> {
             assertEquals(INVALID_REGISTRATION_FORMAT_ERROR_MESSAGE, response.detail());

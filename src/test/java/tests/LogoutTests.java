@@ -7,11 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static io.qameta.allure.Allure.step;
-import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
-import static specs.login.LoginSpec.loginRequestSpec;
-import static specs.login.LoginSpec.successfulLoginResponseSpec;
-import static specs.logout.LogoutSpec.*;
 import static tests.TestData.*;
 
 @DisplayName("Тесты по выходу из системы")
@@ -22,42 +18,18 @@ public class LogoutTests extends TestBase {
     public void successfulLogoutTest() {
         LoginRequestModel loginData = new LoginRequestModel(LOGIN_USERNAME, LOGIN_PASSWORD);
 
-        String refreshToken = step("Успешная авторизация и получение токена", () ->
-                given(loginRequestSpec)
-                        .body(loginData)
-                        .when()
-                        .post("/api/v1/auth/token/")
-                        .then()
-                        .spec(successfulLoginResponseSpec)
-                        .extract().path("refresh"));
+        String refreshToken = api.auth.loginAndGetRefreshToken(loginData);
 
         SuccessfulLogoutRequestModel logoutData = new SuccessfulLogoutRequestModel(refreshToken);
-
-        step("Успешный выход из системы с токеном, проверка статуса 200", () -> {
-            given(successfulLogoutRequestSpec)
-                    .body(logoutData)
-                    .when()
-                    .post("/api/v1/auth/logout/")
-                    .then()
-                    .spec(successfulLogoutResponseSpec);
-        });
+        api.auth.logout(logoutData);
     }
 
     @Test
     @DisplayName("Попытка выхода из системы с некорректным токеном")
     public void wrongRefreshTokenLogoutTest() {
-        SuccessfulLogoutRequestModel LogoutData = new SuccessfulLogoutRequestModel(WRONG_REFRESH_TOKEN);
+        SuccessfulLogoutRequestModel logoutData = new SuccessfulLogoutRequestModel(WRONG_REFRESH_TOKEN);
 
-        WrongRefreshTokenLogoutResponseModel logoutResponse = step("Запрос на разавторизацию с не валидным токеном", () ->
-                given(successfulLogoutRequestSpec)
-                        .body(LogoutData)
-                        .when()
-                        .post("/api/v1/auth/logout/")
-                        .then()
-                        .spec(wrongRefreshTokenResponseSpec)
-                        .extract()
-                        .as(WrongRefreshTokenLogoutResponseModel.class)
-        );
+        WrongRefreshTokenLogoutResponseModel logoutResponse = api.auth.logoutWithWrongToken(logoutData);
 
         step("Проверка возврата ошибки о не валидном токене", () -> {
             assertThat(logoutResponse.detail()).isEqualTo(EXPECTED_TOKEN_DETAIL_ERROR_MESSAGE);

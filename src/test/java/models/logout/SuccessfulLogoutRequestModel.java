@@ -1,5 +1,6 @@
 package models.logout;
 
-public record SuccessfulLogoutRequestModel(String refresh) {
+public record SuccessfulLogoutRequestModel
+        (String refresh) {
 }
 

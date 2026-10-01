@@ -25,4 +25,6 @@ public class TestData {
     public static final String MISSING_TOKEN_UPDATE_USER_ERROR_MESSAGE =
             "Authentication credentials were not provided.";
 
+    public static final String BOOK_NOT_FOUND_ERROR = "No Club matches the given query.";
+
 }
