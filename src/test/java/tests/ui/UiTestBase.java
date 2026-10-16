@@ -91,9 +91,9 @@ public class UiTestBase {
     @BeforeEach
     public void prepareTestData() {
         Faker faker = new Faker();
-        userName = faker.name().firstName() + "1236";
+        userName = faker.name().firstName() + faker.number().numberBetween(3000, 9000);;
 
-        bookTitle = faker.book().title() + " №55";
+        bookTitle = faker.book().title() + faker.number().numberBetween(3000, 9000);
         bookAuthors = faker.book().author();
         publicationYear = faker.number().numberBetween(1900, 2025);
         description = faker.book().title();

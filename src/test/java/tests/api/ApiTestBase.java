@@ -89,9 +89,9 @@ public class ApiTestBase {
 
     public void prepareTests() {
         Faker faker = new Faker();
-        userName = faker.name().firstName() + "1235";
+        userName = faker.name().firstName() + faker.number().numberBetween(13000, 19000);
 
-        bookTitle = faker.book().title() + " №66";
+        bookTitle = faker.book().title() + faker.number().numberBetween(13000, 19000);;
         bookAuthors = faker.book().author();
         publicationYear = faker.number().numberBetween(1900, 2025);
         description = faker.book().title();
