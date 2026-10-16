@@ -1,11 +1,9 @@
-package tests;
+package tests.api;
 
 import models.login.LoginRequestModel;
 import models.update_user.NotProvidedTokenOnUpdateUserResponseModel;
 import models.update_user.SuccessfulUpdateUserRequestModel;
 import models.update_user.SuccessfulUpdateUserResponseModel;
-import net.datafaker.Faker;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -14,22 +12,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static tests.TestData.*;
 
 @DisplayName("Тесты обновления учетных данных пользователя")
-public class UpdateUserTests extends TestBase {
-
-    String firstName;
-    String lastName;
-    String email;
-
-    @BeforeEach
-    public void prepareTestData() {
-        Faker faker = new Faker();
-        firstName = faker.name().firstName();
-        lastName = faker.name().lastName();
-        email = faker.internet().emailAddress();
-    }
+public class UpdateUserTests extends ApiTestBase {
 
     @Test
-    @DisplayName("Успешное обновление учетных данных пользователя")
+    @DisplayName("[API] Успешное обновление учетных данных пользователя")
     public void successfulUpdateUserInfoTest() {
         LoginRequestModel loginData = new LoginRequestModel(LOGIN_USERNAME, LOGIN_PASSWORD);
 
@@ -50,7 +36,7 @@ public class UpdateUserTests extends TestBase {
     }
 
     @Test
-    @DisplayName("Проверка контроля токена при обновлении")
+    @DisplayName("[API] Проверка контроля токена при обновлении")
     public void notProvidedTokenOnUpdateUserTest() {
         LoginRequestModel loginData = new LoginRequestModel(LOGIN_USERNAME, LOGIN_PASSWORD);
 

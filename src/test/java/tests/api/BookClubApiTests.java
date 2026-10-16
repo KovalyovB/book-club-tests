@@ -1,9 +1,10 @@
-package tests;
+package tests.api;
 
+import io.qameta.allure.Step;
 import models.book_club.*;
 import models.login.LoginRequestModel;
+
 import net.datafaker.Faker;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -13,26 +14,10 @@ import static org.hamcrest.Matchers.is;
 import static tests.TestData.*;
 
 @DisplayName("Тесты по работе с библиотекой книжного клуба")
-public class BookClubTests extends TestBase {
-
-    String bookTitle;
-    String bookAuthors;
-    Integer publicationYear;
-    String description;
-    String telegramChatLink;
-
-    @BeforeEach
-    public void prepareTestData() {
-        Faker faker = new Faker();
-        bookTitle = faker.book().title() + " №1";
-        bookAuthors = faker.book().author();
-        publicationYear = faker.number().numberBetween(1900, 2025);
-        description = faker.book().title();
-        telegramChatLink = faker.internet().url();
-    }
+public class BookClubApiTests extends ApiTestBase {
 
     @Test
-    @DisplayName("Добавление книги в библиотеку клуба")
+    @DisplayName("[API] Добавление книги в библиотеку клуба")
     public void successfulAddBookTest() {
         LoginRequestModel loginData = new LoginRequestModel(LOGIN_USERNAME, LOGIN_PASSWORD);
 
@@ -53,7 +38,7 @@ public class BookClubTests extends TestBase {
     }
 
     @Test
-    @DisplayName("Поиск добавленой в бибилиотеку клуба книги")
+    @DisplayName("[API] Поиск добавленой в бибилиотеку клуба книги")
     public void successfulSearchBookTest() {
         LoginRequestModel loginData = new LoginRequestModel(LOGIN_USERNAME, LOGIN_PASSWORD);
 
@@ -79,7 +64,7 @@ public class BookClubTests extends TestBase {
     }
 
     @Test
-    @DisplayName("Редактирование книги после создания")
+    @DisplayName("[API] Редактирование книги после создания")
     public void successfulUpdateBookDataTest() {
         LoginRequestModel loginData = new LoginRequestModel(LOGIN_USERNAME, LOGIN_PASSWORD);
 
@@ -115,7 +100,7 @@ public class BookClubTests extends TestBase {
     }
 
     @Test
-    @DisplayName("Удаление книги из книжного клуба")
+    @DisplayName("[API] Удаление книги из книжного клуба")
     public void successfulDeleteBookDataTest() {
         LoginRequestModel loginData = new LoginRequestModel(LOGIN_USERNAME, LOGIN_PASSWORD);
 
@@ -138,4 +123,31 @@ public class BookClubTests extends TestBase {
             assertThat(notFoundBookError.detail(), is(BOOK_NOT_FOUND_ERROR));
         });
     }
+
+    @Test
+    @DisplayName("[API] Открытие карточки книги в книжном клубе")
+    public void openBookClubPageTest(){
+        LoginRequestModel loginData = new LoginRequestModel(LOGIN_USERNAME, LOGIN_PASSWORD);
+
+        String token = api.auth.loginAndGetRefreshTokenForUpdate(loginData);
+
+        SuccessfulAddBookRequestModel requestBookData =
+                new SuccessfulAddBookRequestModel(bookTitle, bookAuthors, publicationYear, description, telegramChatLink);
+
+        SuccessfulAddBookResponseModel addBookResponse = api.clubs.addBook(token, requestBookData);
+
+        OpenBookClubPageResponseModel openBookClubPageResponse = api.clubs.openBookClubPage(token, addBookResponse.id());
+
+        step("Проверка возврата корректной информации с страницы книжного клуба", () -> {
+            assertThat(openBookClubPageResponse.bookTitle(), is(addBookResponse.bookTitle()));
+            assertThat(openBookClubPageResponse.bookAuthors(), is(addBookResponse.bookAuthors()));
+            assertThat(openBookClubPageResponse.publicationYear(), is(addBookResponse.publicationYear()));
+            assertThat(openBookClubPageResponse.description(), is(addBookResponse.description()));
+            assertThat(openBookClubPageResponse.telegramChatLink(), is(addBookResponse.telegramChatLink()));
+            assertThat(openBookClubPageResponse.id(), is(addBookResponse.id()));
+        });
+
+    }
+
+
 }

@@ -6,7 +6,6 @@ public class TestData {
     public static final String LOGIN_PASSWORD = "123456";
     public static final String LOGIN_WRONG_PASSWORD = "123456000";
 
-
     public static final String LOGIN_EXPECTED_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9";
     public static final String LOGIN_WRONG_CREDENTIALS_ERROR_MESSAGE = "Invalid username or password.";
     public static final String WRONG_REFRESH_TOKEN = "111";
@@ -26,5 +25,11 @@ public class TestData {
             "Authentication credentials were not provided.";
 
     public static final String BOOK_NOT_FOUND_ERROR = "No Club matches the given query.";
+
+    public static final String NO_CLUB_REVIEW_MESSAGE = "No BookReview matches the given query.";
+    public static final String DELETE_REVIEW_WITHOUT_TOKEN_MESSAGE = "Authentication credentials were not provided.";
+
+    public static final String ADMIN_LEAVE_CLUB_ERROR_MESSAGE = "Не удалось покинуть клуб";
+
 
 }

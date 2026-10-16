@@ -1,8 +1,6 @@
-package tests;
+package tests.api;
 
 import models.registration.*;
-import net.datafaker.Faker;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -13,28 +11,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static tests.TestData.*;
 
 @DisplayName("Тесты регистрации пользователя")
-public class RegistrationTests extends TestBase {
-
-    String username;
-    String password;
-
-    @BeforeEach
-    public void prepareTestData() {
-        Faker faker = new Faker();
-        username = faker.name().firstName();
-        password = faker.name().firstName();
-    }
+public class RegistrationTests extends ApiTestBase {
 
     @Test
-    @DisplayName("Успешная регистрация пользователя")
+    @DisplayName("[API] Успешная регистрация пользователя")
     public void successfulRegistrationTest() {
-        SuccessfulRegistrationRequestModel registrationData = new SuccessfulRegistrationRequestModel(username, password);
+        SuccessfulRegistrationRequestModel registrationData = new SuccessfulRegistrationRequestModel(userName, userPassword);
 
         SuccessfulRegistrationResponseModel registrationResponse = api.users.register(registrationData);
 
         step("Проверка корректности данных нового пользователя", () -> {
             String actualUserName = registrationResponse.username();
-            assertThat(actualUserName).isEqualTo(username);
+            assertThat(actualUserName).isEqualTo(userName);
             assertThat(registrationResponse.firstName()).isEqualTo("");
             assertThat(registrationResponse.lastName()).isEqualTo("");
             assertThat(registrationResponse.email()).isEqualTo("");
@@ -43,14 +31,14 @@ public class RegistrationTests extends TestBase {
         });
     }
 
-    @DisplayName("Проверка контроля уникальности пользователей")
+    @DisplayName("[API] Проверка контроля уникальности пользователей")
     @Test
     public void existingUserWrongRegistrationTest() {
-        SuccessfulRegistrationRequestModel registrationData = new SuccessfulRegistrationRequestModel(username, password);
+        SuccessfulRegistrationRequestModel registrationData = new SuccessfulRegistrationRequestModel(userName, userPassword);
 
         SuccessfulRegistrationResponseModel firstRegistrationResponse = api.users.register(registrationData);
         step("Проверка имени зарегестрованного пользователя", () -> {
-            assertThat(firstRegistrationResponse.username()).isEqualTo(username);
+            assertThat(firstRegistrationResponse.username()).isEqualTo(userName);
         });
 
         RegResponseExistingUserModel secondRegistrationResponse = api.users.existingUserRegister(registrationData);
@@ -61,9 +49,9 @@ public class RegistrationTests extends TestBase {
     }
 
     @Test
-    @DisplayName("Проверка валидации обязательных параметров при регистрации")
+    @DisplayName("[API] Проверка валидации обязательных параметров при регистрации")
     public void isRequiredFieldMissingTest() {
-        RegRequestWithoutRequiredParamModel missingParameterData = new RegRequestWithoutRequiredParamModel(username);
+        RegRequestWithoutRequiredParamModel missingParameterData = new RegRequestWithoutRequiredParamModel(userName);
 
         RegResponseWithoutRequiredParamModel response = api.users.missingParameterRegister(missingParameterData);
 
@@ -73,9 +61,9 @@ public class RegistrationTests extends TestBase {
     }
 
     @Test
-    @DisplayName("Проверка контроля метода запроса на регистрацию")
+    @DisplayName("[API] Проверка контроля метода запроса на регистрацию")
     public void invalidRegistrationMethodTest() {
-        SuccessfulRegistrationRequestModel registrationData = new SuccessfulRegistrationRequestModel(username, password);
+        SuccessfulRegistrationRequestModel registrationData = new SuccessfulRegistrationRequestModel(userName, userPassword);
 
         RegResponseInvalidMethodModel response = api.users.invalidMethodRegister(registrationData);
 
@@ -85,9 +73,9 @@ public class RegistrationTests extends TestBase {
     }
 
     @Test
-    @DisplayName("Проверка контроля типа передаваемых данных при регистрации")
+    @DisplayName("[API] Проверка контроля типа передаваемых данных при регистрации")
     public void unsupportedMediaTypeTest() {
-        SuccessfulRegistrationRequestModel registrationData = new SuccessfulRegistrationRequestModel(username, password);
+        SuccessfulRegistrationRequestModel registrationData = new SuccessfulRegistrationRequestModel(userName, userPassword);
 
         RegResponseUnsupportedMediaTypeModel response = api.users.invalidMediaTypeRegister(registrationData);
 

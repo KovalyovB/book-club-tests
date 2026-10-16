@@ -1,4 +1,4 @@
-package tests;
+package tests.api;
 
 import models.login.LoginRequestModel;
 import models.login.SuccessfulLoginResponseModel;
@@ -11,10 +11,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static tests.TestData.*;
 
 @DisplayName("Тесты авторизации пользователя")
-public class LoginTests extends TestBase {
+public class LoginTests extends ApiTestBase {
 
     @Test
-    @DisplayName("Успешная авторизация пользователя")
+    @DisplayName("[API] Успешная авторизация пользователя")
     public void successfulLoginTest() {
         LoginRequestModel loginData = new LoginRequestModel(LOGIN_USERNAME, LOGIN_PASSWORD);
 
@@ -30,7 +30,7 @@ public class LoginTests extends TestBase {
     }
 
     @Test
-    @DisplayName("Тест ошибки при авторизации. Некорректный пароль.")
+    @DisplayName("[API] Тест ошибки при авторизации. Некорректный пароль.")
     public void wrongCredentialsLoginTest() {
         LoginRequestModel loginData = new LoginRequestModel(LOGIN_USERNAME, LOGIN_WRONG_PASSWORD);
 

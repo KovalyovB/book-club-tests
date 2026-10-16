@@ -1,4 +1,4 @@
-package tests;
+package tests.api;
 
 import models.login.LoginRequestModel;
 import models.logout.SuccessfulLogoutRequestModel;
@@ -11,10 +11,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static tests.TestData.*;
 
 @DisplayName("Тесты по выходу из системы")
-public class LogoutTests extends TestBase {
+public class LogoutTests extends ApiTestBase {
 
     @Test
-    @DisplayName("Успешный выход из системы")
+    @DisplayName("[API] Успешный выход из системы")
     public void successfulLogoutTest() {
         LoginRequestModel loginData = new LoginRequestModel(LOGIN_USERNAME, LOGIN_PASSWORD);
 
@@ -25,7 +25,7 @@ public class LogoutTests extends TestBase {
     }
 
     @Test
-    @DisplayName("Попытка выхода из системы с некорректным токеном")
+    @DisplayName("[API] Попытка выхода из системы с некорректным токеном")
     public void wrongRefreshTokenLogoutTest() {
         SuccessfulLogoutRequestModel logoutData = new SuccessfulLogoutRequestModel(WRONG_REFRESH_TOKEN);
 

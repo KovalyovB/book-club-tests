@@ -14,6 +14,10 @@ public class BookClubSpec {
     public static RequestSpecification successfulSearchBookRequestSpec = baseRequestSpec;
     public static RequestSpecification successfulUpdateBookDataRequestSpec = baseRequestSpec;
     public static RequestSpecification successfulDeleteBookDataRequestSpec = baseRequestSpec;
+    public static RequestSpecification successfulOpenBookClubPageRequestSpec = baseRequestSpec;
+    public static RequestSpecification successfulAddClubReviewRequestSpec = baseRequestSpec;
+    public static RequestSpecification successfulGetClubReviewRequestSpec = baseRequestSpec;
+    public static RequestSpecification successfulDeleteClubReviewRequestSpec = baseRequestSpec;
 
 
     public static ResponseSpecification successfulAddBookResponseSpec = new ResponseSpecBuilder()
@@ -57,6 +61,61 @@ public class BookClubSpec {
             .expectStatusCode(404)
             .expectBody(matchesJsonSchemaInClasspath
                     ("schemas/book_club/search_missing_book_response_schema.json"))
+            .expectBody("detail", notNullValue())
+            .build();
+
+    public static ResponseSpecification openBookClubPageResponseSpec = new ResponseSpecBuilder()
+            .log(ALL)
+            .expectStatusCode(200)
+            .expectBody(matchesJsonSchemaInClasspath
+                    ("schemas/book_club/open_book_club_response_schema.json"))
+            .expectBody("bookTitle", notNullValue())
+            .expectBody("bookAuthors", notNullValue())
+            .expectBody("publicationYear", notNullValue())
+            .expectBody("description", notNullValue())
+            .expectBody("telegramChatLink", notNullValue())
+            .build();
+
+    public static ResponseSpecification openAddClubReviewResponseSpec = new ResponseSpecBuilder()
+            .log(ALL)
+            .expectStatusCode(201)
+            .expectBody(matchesJsonSchemaInClasspath
+                    ("schemas/book_club/successful_add_club_review_response_schema.json"))
+            .expectBody("id", notNullValue())
+            .expectBody("club", notNullValue())
+            .expectBody("user", notNullValue())
+            .expectBody("review", notNullValue())
+            .expectBody("assessment", notNullValue())
+            .expectBody("readPages", notNullValue())
+            .expectBody("created", notNullValue())
+            .build();
+
+    public static ResponseSpecification successfulGetClubReviewResponseSpec = new ResponseSpecBuilder()
+            .log(ALL)
+            .expectStatusCode(200)
+            .expectBody(matchesJsonSchemaInClasspath
+                    ("schemas/book_club/successful_get_club_review_response_schema.json"))
+            .expectBody("id", notNullValue())
+            .expectBody("club", notNullValue())
+            .expectBody("review", notNullValue())
+            .expectBody("assessment", notNullValue())
+            .expectBody("readPages", notNullValue())
+            .expectBody("created", notNullValue())
+            .build();
+
+    public static ResponseSpecification wrongGetClubReviewResponseSpec = new ResponseSpecBuilder()
+            .log(ALL)
+            .expectStatusCode(404)
+            .expectBody(matchesJsonSchemaInClasspath
+                    ("schemas/book_club/wrong_get_club_review_response_schema.json"))
+            .expectBody("detail", notNullValue())
+            .build();
+
+    public static ResponseSpecification deleteReviewWithoutTokenResponseSpec = new ResponseSpecBuilder()
+            .log(ALL)
+            .expectStatusCode(401)
+            .expectBody(matchesJsonSchemaInClasspath
+                    ("schemas/book_club/wrong_get_club_review_response_schema.json"))
             .expectBody("detail", notNullValue())
             .build();
 }
